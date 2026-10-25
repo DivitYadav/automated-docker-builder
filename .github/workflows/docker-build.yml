@@ -1,0 +1,41 @@
+name: Automated Docker Image Builder
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Docker image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: false
+          tags: automated-docker-builder:latest
+
+      - name: Build and test application
+        run: |
+          docker build -t automated-docker-builder:test .
+          docker run -d --name test-app -p 5000:5000 automated-docker-builder:test
+
+          for i in $(seq 1 20); do
+            if curl -fsS http://localhost:5000/health; then
+              exit 0
+            fi
+            sleep 1
+          done
+
+          docker logs test-app
+          exit 1
