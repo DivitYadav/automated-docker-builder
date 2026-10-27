@@ -6,7 +6,7 @@ app = Flask(__name__)
 @app.route("/")
 def home():
     return """
-    <h1>My newly Updated Docker Application</h1>
+    <h1>My Updated Docker Application CCD Demo </h1>
     <p>Deployed using Docker and GitHub Actions!</p>
     <p>CI Pipeline Status: Working</p>
     """
